@@ -1,23 +1,69 @@
-import logo from './logo.svg';
+import { useReducer} from 'react';
 import './App.css';
+import List from './Components/List';
+import InputField from './Components/InputField';
 
 function App() {
+
+  let nameEdit = null;
+
+  function reducerFunction(nameArray, action){
+
+    switch(action.type)
+    {
+      case 'ADD':
+
+      return [...nameArray, action.payload];
+
+      case 'DELETE':
+      nameEdit = null;
+
+
+      return nameArray.filter((e)=>{
+        if(e.key!== action.payload)
+        return e;
+
+      })
+
+
+      case 'EDIT':
+        nameEdit = action.payload;
+        return [...nameArray];
+
+      case 'UPDATE':
+        const idx = nameArray.findIndex((item)=>{
+          if(item.key=== action.payload.key)return true;
+        })
+
+        nameArray.splice(idx, 1, action.payload);
+
+        nameEdit = null;
+
+        return [...nameArray];
+
+
+      default:
+      
+      return [...nameArray];
+
+    }
+
+  }
+
+  const[nameArray, dispatch] = useReducer(reducerFunction, []);
+
+
+  
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
+      <div>To-Do-List</div>
+
+      <InputField dispatch={dispatch} nameEdit={nameEdit}/>
+
+      <List nameArray={nameArray} dispatch={dispatch}/>
+      
     </div>
   );
 }
